@@ -940,11 +940,28 @@ async function bootOnce(){
   renderSliders();renderChips();renderAll();
 }
 
+function authErrorFromUrl(){
+  const hash = new URLSearchParams(window.location.hash.slice(1));
+  const query = new URLSearchParams(window.location.search);
+  const desc = hash.get("error_description") || query.get("error_description");
+  const code = hash.get("error") || query.get("error") || hash.get("error_code") || query.get("error_code");
+  if(!desc && !code) return null;
+  return decodeURIComponent((desc || code).replace(/\+/g," "));
+}
+
 sb.auth.onAuthStateChange((event, session)=>{
+  console.log("[auth]", event, session);
   if(session) bootOnce();
 });
 
 (async()=>{
+  const err = authErrorFromUrl();
+  if(err){
+    console.error("[auth error from redirect]", err);
+    showAuthGate("Sign-in failed: "+err);
+    history.replaceState(null, "", window.location.pathname);
+    return;
+  }
   const { data:{ session } } = await sb.auth.getSession();
   if(session) bootOnce();
   else showAuthGate();
