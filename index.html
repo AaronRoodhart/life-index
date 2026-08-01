@@ -483,28 +483,15 @@ function fmtDay(s){
 function shortDay(s){return new Date(s+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"}).toUpperCase()}
 
 /* 
- * Fiscal quarter starting on August 3rd at 3-month intervals. 
- * Aug 3 - Nov 2 = Q1, Nov 3 - Feb 2 = Q2, Feb 3 - May 2 = Q3, May 3 - Aug 2 = Q4
+ * Fiscal quarter starting on August 1st at 3-month intervals. 
+ * Aug-Oct = Q1, Nov-Jan = Q2, Feb-Apr = Q3, May-Jul = Q4
  */
 function quarterOf(d=new Date()){
+  const m = d.getMonth(); 
   const y = d.getFullYear();
-  const m = d.getMonth(); // 0 = Jan, 7 = Aug
-  const day = d.getDate();
-
-  // Determine cycle year (August 3 starts a new cycle year)
-  let cycleYear = y;
-  if (m < 7 || (m === 7 && day < 3)) {
-    cycleYear = y - 1;
-  }
-
-  // Count months from Aug 3 of cycleYear
-  let mDiff = (d.getFullYear() - cycleYear) * 12 + (m - 7);
-  if (day < 3) {
-    mDiff -= 1;
-  }
-  mDiff = (mDiff % 12 + 12) % 12;
-
-  const q = Math.floor(mDiff / 3) + 1;
+  const cycleYear = m < 7 ? y - 1 : y; 
+  const shiftedMonth = (m + 5) % 12;
+  const q = Math.floor(shiftedMonth / 3) + 1;
   return cycleYear + "-Q" + q;
 }
 
