@@ -271,6 +271,141 @@ footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-conte
 /* ---------- heatmap today ---------- */
 .h-cell.h-today{outline:2px solid var(--ink);outline-offset:-1px;border-radius:2px;z-index:1;position:relative}
 
+/* ---------- activity rings hero ---------- */
+.rings-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rings-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.rings-svg-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+}
+.rings-legend {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px 12px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ring-leg-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: rgba(255,255,255,0.85);
+}
+.ring-leg-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.ring-leg-name {
+  flex: 1;
+}
+.ring-leg-val {
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ---------- quarterly review top header ---------- */
+.q-header-card {
+  background: var(--card);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow);
+  padding: 20px 22px;
+  margin-top: 18px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(18,22,31,0.06);
+}
+.q-header-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.q-select-wrap {
+  flex: 1;
+  min-width: 260px;
+}
+.q-select-pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(51,85,209,0.08) 0%, rgba(23,147,106,0.08) 100%);
+  border: 1.5px solid rgba(51,85,209,0.25);
+  border-radius: 14px;
+  padding: 3px 14px 3px 6px;
+  transition: all 0.2s ease;
+}
+.q-select-pill:focus-within, .q-select-pill:hover {
+  border-color: var(--work);
+  box-shadow: 0 4px 14px rgba(51,85,209,0.14);
+}
+.q-select-pill select {
+  border: 0 !important;
+  background: transparent !important;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--ink);
+  padding: 8px 30px 8px 10px !important;
+  cursor: pointer;
+  width: 100%;
+}
+.pill-badge {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: var(--work);
+  color: #fff;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.pill-badge.active { background: var(--work); }
+.pill-badge.saved { background: var(--health); }
+.pill-badge.new { background: var(--joy); }
+.btn-gradient {
+  background: linear-gradient(135deg, #12161F 0%, #3355D1 100%);
+  color: #fff;
+  border: 0;
+  border-radius: 12px;
+  padding: 11px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(51,85,209,0.25);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.btn-gradient:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(51,85,209,0.35);
+}
+.q-header-desc {
+  margin: 12px 0 0;
+  font-size: 12.5px;
+  color: var(--ink-2);
+  line-height: 1.55;
+}
+
 .authgate{position:fixed;inset:0;z-index:200;background:var(--paper);display:none;align-items:center;justify-content:center;padding:20px}
 .authgate.on{display:flex}
 .authgate-card{max-width:360px;width:100%;background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow);padding:28px}
@@ -328,7 +463,7 @@ footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-conte
 
 <div class="wrap">
 
-  <!-- ============ NOW ============ -->
+  <!-- ============ LIFE STATUS ============ -->
   <section class="tab" id="t-now">
     <div class="hero">
       <div class="hero-mesh" id="mesh"></div>
@@ -339,7 +474,7 @@ footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-conte
           <div class="hero-sub" id="heroSub"></div>
           <div class="hero-flank" id="heroFlank"></div>
         </div>
-        <div class="matrix" id="matrix"></div>
+        <div class="rings-wrap" id="ringsWrap"></div>
       </div>
     </div>
 
@@ -355,21 +490,31 @@ footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-conte
     <div id="trendWrap"></div>
   </section>
 
-  <!-- ============ REVIEW ============ -->
+  <!-- ============ QUARTERLY REVIEWS ============ -->
   <section class="tab" id="t-review">
+    <div class="q-header-card">
+      <div class="q-header-row">
+        <div class="q-select-wrap">
+          <label class="fl" for="reviewQSel">Select Quarter</label>
+          <div class="q-select-pill">
+            <select id="reviewQSel"></select>
+            <span class="pill-badge active" id="qStatusBadge">Active</span>
+          </div>
+        </div>
+        <div class="q-actions">
+          <button class="btn btn-gradient" id="saveQBtn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            Save Quarter Snapshot
+          </button>
+        </div>
+      </div>
+      <p class="q-header-desc" id="qHeaderDesc">Rating current quarter. Adjust sliders below and save to record your quarter snapshot.</p>
+    </div>
+
     <div class="eyebrow">Score & Reflect</div>
     <div class="card" style="padding:20px 22px 10px">
       <p style="margin:0 0 20px;font-size:13.5px;color:var(--ink-2);line-height:1.6;max-width:56ch">Rate each area and log your reflection directly beneath it. Drag the slider to adjust your score.</p>
       <div id="sliders"></div>
-    </div>
-
-    <div class="eyebrow">Close the quarter</div>
-    <div class="card">
-      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
-        <div style="flex:1;min-width:150px"><label class="fl" for="qsel">Quarter</label><select id="qsel"></select></div>
-        <button class="btn" id="saveQ">Save this quarter</button>
-      </div>
-      <p style="margin:14px 0 0;font-size:12px;color:var(--muted);line-height:1.55">Saving stores a snapshot of all ten scores and your notes. Your sliders stay where they are, so next quarter you adjust from here rather than starting over.</p>
     </div>
 
     <div class="eyebrow">Saved quarters</div>
@@ -647,15 +792,49 @@ function renderHero(){
   });
   document.getElementById("mesh").style.background=g.join(",")+",linear-gradient(150deg,#39405A,#1B1F2B)";
 
-  document.getElementById("matrix").innerHTML=AREAS.map((a,ci)=>{
-    let d="";
-    for(let r=1;r<=10;r++){
-      const v=S.scores[a.id];
-      const cls=v>=r?"f":(v>=r-.5?"h":"");
-      d+='<i class="dot '+cls+'" style="animation-delay:'+(ci*26+r*14)+'ms"></i>';
-    }
-    return '<div class="mcol" title="'+a.name+" — "+one(S.scores[a.id])+'/10">'+d+'<div class="lab">'+a.name.split(" ")[0]+"</div></div>";
-  }).join("");
+  renderRings();
+}
+
+function renderRings(){
+  const wrap = document.getElementById("ringsWrap");
+  if(!wrap) return;
+
+  const pData = PILLARS.map((p, i) => {
+    const avg = pAvg(p.id);
+    const r = 82 - i * 15;
+    const circum = 2 * Math.PI * r;
+    const offset = circum * (1 - avg / 10);
+    return { p, avg, r, circum, offset };
+  });
+
+  const ringsHTML = pData.map(d => {
+    return `<circle class="ring-bg" cx="100" cy="100" r="${d.r}" stroke="${d.p.color}" stroke-width="11" opacity="0.15" fill="none"/>` +
+      `<circle class="ring-fg" cx="100" cy="100" r="${d.r}" stroke="${d.p.color}" stroke-width="11" fill="none" ` +
+      `stroke-linecap="round" stroke-dasharray="${d.circum.toFixed(1)}" stroke-dashoffset="${d.offset.toFixed(1)}" ` +
+      `transform="rotate(-90 100 100)" style="transition: stroke-dashoffset 0.8s cubic-bezier(0.2,0.8,0.3,1)">` +
+      `<title>${d.p.name}: ${one(d.avg)}/10</title></circle>`;
+  }).join('');
+
+  const legendHTML = PILLARS.map(p => {
+    const avg = pAvg(p.id);
+    return `<div class="ring-leg-item"><span class="ring-leg-dot" style="background:${p.color}"></span>` +
+      `<span class="ring-leg-name">${p.name}</span><span class="ring-leg-val">${one(avg)}</span></div>`;
+  }).join('');
+
+  wrap.innerHTML = `
+    <div class="rings-card">
+      <div class="rings-svg-box">
+        <svg viewBox="0 0 200 200" width="165" height="165">
+          ${ringsHTML}
+          <text x="100" y="94" text-anchor="middle" fill="#ffffff" font-family="var(--serif)" font-size="28" font-weight="400">${one(overall())}</text>
+          <text x="100" y="112" text-anchor="middle" fill="rgba(255,255,255,0.65)" font-family="var(--mono)" font-size="9" letter-spacing="0.14em">OVERALL</text>
+        </svg>
+      </div>
+      <div class="rings-legend">
+        ${legendHTML}
+      </div>
+    </div>
+  `;
 }
 
 /* ============================== pillars ============================== */
@@ -772,6 +951,69 @@ function updateSlide(id){
 }
 
 /* ============================== history + trend ============================== */
+function qDateRange(qKey){
+  const parts = qKey.split("-Q");
+  if(parts.length!==2) return "";
+  const y = parseInt(parts[0], 10);
+  const n = parseInt(parts[1], 10);
+  if(n === 1) return `Aug 1 – Oct 31, ${y}`;
+  if(n === 2) return `Nov 1, ${y} – Jan 31, ${y+1}`;
+  if(n === 3) return `Feb 1 – Apr 30, ${y+1}`;
+  if(n === 4) return `May 1 – Jul 31, ${y+1}`;
+  return "";
+}
+
+function renderReviewHeader(){
+  const sel = document.getElementById("reviewQSel");
+  if(!sel) return;
+
+  const currentQ = quarterOf();
+  const now = new Date();
+  const quarterList = [];
+
+  for(let i = 1; i >= -8; i--){
+    const d = new Date(now.getFullYear(), now.getMonth() + i * 3, 1);
+    quarterList.push(quarterOf(d));
+  }
+  const uniqueQuarters = [...new Set(quarterList)].sort().reverse();
+
+  const currentSel = sel.value || currentQ;
+
+  sel.innerHTML = uniqueQuarters.map(q => {
+    const isCurrent = q === currentQ;
+    const isSaved = S.history.some(r => r.q === q);
+    const range = qDateRange(q);
+    let tag = isCurrent ? "Active" : (isSaved ? "Saved" : "New");
+    return `<option value="${q}"${q === currentSel ? ' selected' : ''}>` +
+           `${qLabel(q)} (${range}) · ${tag}` +
+           `</option>`;
+  }).join("");
+
+  updateReviewQuarterState();
+}
+
+function updateReviewQuarterState(){
+  const sel = document.getElementById("reviewQSel");
+  if(!sel) return;
+  const selectedQ = sel.value || quarterOf();
+  const currentQ = quarterOf();
+  const isSaved = S.history.some(r => r.q === selectedQ);
+  const badge = document.getElementById("qStatusBadge");
+  const desc = document.getElementById("qHeaderDesc");
+  const range = qDateRange(selectedQ);
+
+  if(selectedQ === currentQ){
+    if(badge){ badge.textContent = "Active"; badge.className = "pill-badge active"; }
+    if(desc){ desc.innerHTML = `Rating <b>${qLabel(selectedQ)}</b> (${range}). Adjust sliders below to set your current scores and reflections.`; }
+  } else if(isSaved){
+    if(badge){ badge.textContent = "Saved"; badge.className = "pill-badge saved"; }
+    if(desc){ desc.innerHTML = `Viewing saved reflection for <b>${qLabel(selectedQ)}</b> (${range}). Adjust sliders and click Save to update.`; }
+  } else {
+    if(badge){ badge.textContent = "New"; badge.className = "pill-badge new"; }
+    if(desc){ desc.innerHTML = `Setting up a new reflection for <b>${qLabel(selectedQ)}</b> (${range}). Click Save to record this quarter snapshot.`; }
+  }
+}
+
 function renderHistory(){
   const h=document.getElementById("history");
   if(!S.history.length){
@@ -787,11 +1029,6 @@ function renderHistory(){
         '</span><span class="sc">'+one(av)+"</span></div>";
     }).join("");
   }
-  const qs=document.getElementById("qsel");
-  const now=new Date(),opts=[];
-  for(let i=2;i>=-8;i--){const d=new Date(now.getFullYear(),now.getMonth()+i*3,1);opts.push(quarterOf(d))}
-  const uniqueOpts = [...new Set(opts)].sort().reverse();
-  qs.innerHTML=uniqueOpts.map(q=>'<option value="'+q+'"'+(q===quarterOf()?" selected":"")+">"+qLabel(q)+(S.history.some(r=>r.q===q)?" · overwrite":"")+"</option>").join("");
 }
 
 function renderTrend(){
@@ -1011,7 +1248,7 @@ function renderHeatmap(){
 }
 
 /* ============================== render all ============================== */
-function renderAll(){renderHero();renderPillars();renderBets();renderEffort();renderTrend();renderHistory();renderTasks();renderHeatmap();renderDayHero()}
+function renderAll(){renderHero();renderPillars();renderBets();renderEffort();renderTrend();renderHistory();renderTasks();renderHeatmap();renderDayHero();renderReviewHeader()}
 
 /* ============================== events ============================== */
 document.getElementById("nav").addEventListener("click",e=>{
@@ -1031,14 +1268,26 @@ document.getElementById("sliders").addEventListener("input",e=>{
 });
 
 // save quarter
-document.getElementById("saveQ").addEventListener("click",()=>{
-  const q=document.getElementById("qsel").value;
+document.getElementById("saveQBtn").addEventListener("click",()=>{
+  const sel=document.getElementById("reviewQSel");
+  const q=sel?sel.value:quarterOf();
   const rec={q,savedAt:new Date().toISOString(),scores:{...S.scores},notes:{...S.notes}};
   const i=S.history.findIndex(r=>r.q===q);
   if(i>-1)S.history[i]=rec;else S.history.push(rec);
   S.history.sort((a,b)=>a.q.localeCompare(b.q));
-  save();renderHistory();renderTrend();renderHero();
+  save();renderHistory();renderTrend();renderHero();renderPillars();renderReviewHeader();
   toast(qLabel(q)+" saved");
+});
+
+document.getElementById("reviewQSel").addEventListener("change",e=>{
+  const q=e.target.value;
+  const savedRecord=S.history.find(r=>r.q===q);
+  if(savedRecord){
+    if(savedRecord.scores) S.scores=Object.assign({},S.scores,savedRecord.scores);
+    if(savedRecord.notes) S.notes=Object.assign({},S.notes,savedRecord.notes);
+    renderSliders();renderHero();renderPillars();
+  }
+  updateReviewQuarterState();
 });
 
 // missions
