@@ -231,6 +231,12 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,va
 .toast.on{transform:translate(-50%,0)}
 footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
 
+.authgate{position:fixed;inset:0;z-index:200;background:var(--paper);display:none;align-items:center;justify-content:center;padding:20px}
+.authgate.on{display:flex}
+.authgate-card{max-width:360px;width:100%;background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow);padding:28px}
+.authgate-card h1{font-family:var(--serif);font-weight:400;font-size:28px;margin:0 0 8px}
+.authgate-card p{font-size:13.5px;color:var(--ink-2);line-height:1.6;margin:0 0 18px}
+
 @media(max-width:760px){
   .grid,.bets{grid-template-columns:1fr}
   .hero-score .num{font-size:62px}
@@ -247,6 +253,17 @@ footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-conte
 </style>
 </head>
 <body>
+
+<div class="authgate" id="authGate">
+  <div class="authgate-card">
+    <h1>Life Index</h1>
+    <p>Sign in with your email to sync your data across devices. We'll send you a magic link — no password needed.</p>
+    <label class="fl" for="authEmail">Email</label>
+    <input type="text" id="authEmail" placeholder="you@example.com" autocomplete="email">
+    <button class="btn" id="authSend" style="margin-top:12px;width:100%">Send magic link</button>
+    <p id="authMsg" style="margin-top:12px;font-size:12px;color:var(--muted)"></p>
+  </div>
+</div>
 
 <div class="topbar"><div class="wrap">
   <div class="brand"><b>Life Index</b><span id="brandq">—</span></div>
@@ -356,6 +373,7 @@ footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-conte
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 /* ============================== config ============================== */
 const PILLARS=[
@@ -427,43 +445,52 @@ function uid(){return Math.random().toString(36).slice(2,9)}
 let tt;
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("on"),2100)}
 
-/* ============================== storage ============================== */
-// 1. PASTE YOUR BIN ID HERE (Keep the quotes)
-const BIN_ID = "6a6c9d0ef5f4af5e29d9f5dd"; 
+/* ============================== storage (Supabase) ============================== */
+const SUPABASE_URL = "https://eqcmhnivnkioiyuuhdko.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxY21obml2bmtpb2l5dXVoZGtvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NzEwNDYsImV4cCI6MjEwMTE0NzA0Nn0.9d1IfRw7sLtLhDjTvttjKdJYWuh6mYECbL9nvPvWRh0";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let currentUser = null;
 
-let API_KEY = localStorage.getItem("life_index_api_key");
+function showAuthGate(msg){
+  document.getElementById("authGate").classList.add("on");
+  if(msg) document.getElementById("authMsg").textContent = msg;
+}
+function hideAuthGate(){
+  document.getElementById("authGate").classList.remove("on");
+}
+
+async function sendMagicLink(){
+  const email = document.getElementById("authEmail").value.trim();
+  if(!email){toast("Enter your email first");return}
+  const btn = document.getElementById("authSend");
+  btn.disabled = true; btn.textContent = "Sending…";
+  const { error } = await sb.auth.signInWithOtp({
+    email,
+    options:{ emailRedirectTo: window.location.href }
+  });
+  btn.disabled = false; btn.textContent = "Send magic link";
+  document.getElementById("authMsg").textContent = error
+    ? "Something went wrong: "+error.message
+    : "Check your email for a sign-in link, then reopen it on this device.";
+}
+
 let isServerHosted = false;
 
 async function load(){
-  // Ask for password on first load
-  if (BIN_ID !== "PASTE_YOUR_BIN_ID_HERE" && !API_KEY) {
-    API_KEY = prompt("Enter your Database API Key to sync to the cloud:");
-    if (API_KEY) localStorage.setItem("life_index_api_key", API_KEY);
-  }
+  const local = localStorage.getItem(KEY);
+  if(local) S = Object.assign(S, JSON.parse(local));
 
   try {
-    if (API_KEY && BIN_ID !== "PASTE_YOUR_BIN_ID_HERE") {
-      const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-        headers: { "X-Access-Key": API_KEY }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        // JSONBin wraps your data in a 'record' object
-        if (data.record && Object.keys(data.record).length > 0) {
-          S = Object.assign(S, data.record);
-        }
-        isServerHosted = true;
-      } else {
-        throw new Error("Failed to fetch remote data. Check your API Key.");
-      }
-    } else {
-      throw new Error("No API Key or Bin ID set up yet.");
+    const { data:{ user } } = await sb.auth.getUser();
+    currentUser = user;
+    if(user){
+      const { data, error } = await sb.from("life_index").select("data").eq("user_id", user.id).maybeSingle();
+      if(error) throw error;
+      if(data && data.data && Object.keys(data.data).length) S = Object.assign(S, data.data);
+      isServerHosted = true;
     }
   } catch(e) {
     console.warn(e);
-    // Fallback to local storage if offline or missing keys
-    const local = localStorage.getItem(KEY);
-    if(local) S = Object.assign(S, JSON.parse(local));
   }
 
   // Ensure data structure is correct
@@ -486,34 +513,25 @@ async function load(){
 let sv;
 function save(){
   clearTimeout(sv);
-  // Wait 1.5 seconds after you stop typing/clicking before saving to avoid using up free API calls
+  // Wait 1.5 seconds after you stop typing/clicking before saving to avoid excess writes
   sv = setTimeout(async () => {
     const p = JSON.stringify(S);
     localStorage.setItem(KEY, p); // Always save a local backup
-    
-    if (isServerHosted && API_KEY) {
+
+    if (currentUser) {
       document.getElementById("storeNote").textContent = "Saving to cloud...";
-      try {
-        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Access-Key": API_KEY
-          },
-          body: p
-        });
-        if(res.ok) {
-          document.getElementById("storeNote").textContent = "Synced with server";
-        } else {
-          throw new Error("Sync failed");
-        }
-      } catch(e) {
-        document.getElementById("storeNote").textContent = "Sync failed. Saved locally.";
-      }
+      const { error } = await sb.from("life_index").upsert({
+        user_id: currentUser.id,
+        data: S,
+        updated_at: new Date().toISOString()
+      });
+      document.getElementById("storeNote").textContent = error
+        ? "Sync failed. Saved locally."
+        : "Synced with server";
     } else {
       document.getElementById("storeNote").textContent = "Saved locally";
     }
-  }, 1500); 
+  }, 1500);
 }
 /* ============================== hero ============================== */
 function renderHero(){
@@ -867,12 +885,29 @@ document.getElementById("impFile").addEventListener("change",e=>{
 });
 
 /* ============================== boot ============================== */
-(async()=>{
+document.getElementById("authSend").addEventListener("click", sendMagicLink);
+document.getElementById("authEmail").addEventListener("keydown", e=>{if(e.key==="Enter")sendMagicLink()});
+
+let booted = false;
+async function bootOnce(){
+  if(booted) return;
+  booted = true;
+  hideAuthGate();
   await load();
-  document.getElementById("storeNote").textContent = isServerHosted 
-    ? "Synced with server" 
+  document.getElementById("storeNote").textContent = isServerHosted
+    ? "Synced with server"
     : "Data stored locally — export to update host";
   renderSliders();renderChips();renderAll();
+}
+
+sb.auth.onAuthStateChange((event, session)=>{
+  if(session) bootOnce();
+});
+
+(async()=>{
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session) bootOnce();
+  else showAuthGate();
 })();
 </script>
 </body>
