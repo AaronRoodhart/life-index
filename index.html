@@ -378,6 +378,7 @@ footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-conte
     <button class="btn ghost sm" id="expBtn">Export data</button>
     <button class="btn ghost sm" id="impBtn">Import</button>
     <button class="btn ghost sm" id="setPwBtn">Set password</button>
+    <button class="btn ghost sm" id="logoutBtn">Log out</button>
     <input type="file" id="impFile" accept="application/json" hidden>
   </footer>
 </div>
@@ -501,6 +502,11 @@ async function signInWithGoogle(){
     provider: "google",
     options:{ redirectTo: window.location.href }
   });
+}
+
+async function logOut(){
+  await sb.auth.signOut();
+  location.reload();
 }
 
 async function setPassword(){
@@ -912,6 +918,7 @@ document.getElementById("expBtn").addEventListener("click",()=>{
 });
 document.getElementById("impBtn").addEventListener("click",()=>document.getElementById("impFile").click());
 document.getElementById("setPwBtn").addEventListener("click", setPassword);
+document.getElementById("logoutBtn").addEventListener("click", logOut);
 document.getElementById("impFile").addEventListener("change",e=>{
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();
