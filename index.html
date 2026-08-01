@@ -268,8 +268,38 @@ footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-conte
 .pillar .status-dot.amber{background:#DFA02C}
 .pillar .status-dot.red{background:#CE4A73}
 
-/* ---------- heatmap today ---------- */
-.h-cell.h-today{outline:2px solid var(--ink);outline-offset:-1px;border-radius:2px;z-index:1;position:relative}
+/* ---------- heatmap today & quarter activity ---------- */
+.q-activity-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.q-activity-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.q-activity-badge {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 8px;
+  background: rgba(23,147,106,0.12);
+  color: var(--health);
+  border: 1px solid rgba(23,147,106,0.25);
+}
+.h-cell.h-today {
+  outline: 2.5px solid var(--health) !important;
+  outline-offset: 1px;
+  box-shadow: 0 0 12px rgba(23,147,106,0.65);
+  z-index: 5;
+  position: relative;
+}
 
 /* ---------- activity rings hero ---------- */
 .rings-wrap {
@@ -558,9 +588,14 @@ footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-conte
     <div class="eyebrow">Still open · earlier days</div>
     <div class="card"><div class="tlist" id="topen"></div></div>
 
-    <div class="eyebrow">Activity</div>
-    <div class="card">
-      <div class="streak-bar" id="streakBar"></div>
+    <div class="eyebrow">Quarter Activity & Progress</div>
+    <div class="card" id="qActivityCard">
+      <div class="q-activity-header">
+        <div class="q-activity-title">
+          <span class="q-activity-badge" id="qActivityBadge">Day 1 of 92 · Quarter</span>
+        </div>
+        <div class="streak-bar" id="streakBar"></div>
+      </div>
       <div id="heatmap" class="heatmap-wrap"></div>
     </div>
   </section>
@@ -1212,38 +1247,106 @@ function renderStreak(){
   }
 }
 
+function getQuarterBounds(qKey){
+  const parts = qKey.split("-Q");
+  if(parts.length!==2) return null;
+  const y = parseInt(parts[0], 10);
+  const n = parseInt(parts[1], 10);
+  let start, end;
+  if(n === 1){
+    start = new Date(y, 7, 1);
+    end = new Date(y, 9, 31);
+  } else if(n === 2){
+    start = new Date(y, 10, 1);
+    end = new Date(y + 1, 0, 31);
+  } else if(n === 3){
+    start = new Date(y + 1, 1, 1);
+    end = new Date(y + 1, 3, 30);
+  } else if(n === 4){
+    start = new Date(y + 1, 4, 1);
+    end = new Date(y + 1, 6, 31);
+  }
+  return { start, end };
+}
+
 function renderHeatmap(){
   const wrap = document.getElementById("heatmap");
   if(!wrap) return;
+
+  const currentQ = quarterOf();
+  const bounds = getQuarterBounds(currentQ);
   const now = new Date();
   const todayStr = iso(now);
   const counts = {};
   S.tasks.forEach(t => {
     if(t.done) counts[t.date] = (counts[t.date] || 0) + 1;
   });
+
+  let totalDays = 92;
+  let dayNum = 1;
+  if(bounds){
+    const qStartMs = new Date(bounds.start.getFullYear(), bounds.start.getMonth(), bounds.start.getDate()).getTime();
+    const qEndMs = new Date(bounds.end.getFullYear(), bounds.end.getMonth(), bounds.end.getDate()).getTime();
+    const nowMs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+
+    totalDays = Math.round((qEndMs - qStartMs) / 86400000) + 1;
+    if(nowMs < qStartMs) dayNum = 0;
+    else if(nowMs > qEndMs) dayNum = totalDays;
+    else dayNum = Math.floor((nowMs - qStartMs) / 86400000) + 1;
+  }
+
+  const badgeEl = document.getElementById("qActivityBadge");
+  if(badgeEl){
+    badgeEl.textContent = `Day ${dayNum} of ${totalDays} · ${qLabel(currentQ)}`;
+  }
+
+  const qStart = bounds ? bounds.start : new Date(now.getFullYear(), 7, 1);
+  const qEnd = bounds ? bounds.end : new Date(now.getFullYear(), 9, 31);
   
+  const gridStart = new Date(qStart.getFullYear(), qStart.getMonth(), qStart.getDate());
+  gridStart.setDate(gridStart.getDate() - gridStart.getDay());
+
+  const gridEnd = new Date(qEnd.getFullYear(), qEnd.getMonth(), qEnd.getDate());
+  gridEnd.setDate(gridEnd.getDate() + (6 - gridEnd.getDay()));
+
+  const numDays = Math.round((gridEnd - gridStart) / 86400000) + 1;
+
   let html = '<div class="heatmap">';
-  // Calculate start as Sunday 51 weeks ago relative to local midnight
-  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  start.setDate(start.getDate() - start.getDay() - (51 * 7)); 
-  
-  for(let i=0; i<364; i++){
-    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+  for(let i = 0; i < numDays; i++){
+    const d = new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate() + i);
     const dStr = iso(d);
-    const c = counts[dStr] || 0;
-    const isToday = dStr === todayStr;
-    const isFuture = dStr > todayStr;
     
-    if (isFuture) {
-      html += '<div class="h-cell h-future" data-lvl="0" style="opacity:0.25" title="'+shortDay(dStr)+' (future)"></div>';
+    const inQuarter = d >= qStart && d <= qEnd;
+    if(!inQuarter){
+      html += '<div class="h-cell" style="background:transparent;border:0" title=""></div>';
     } else {
-      let lvl = c === 0 ? 0 : (c <= 1 ? 1 : (c <= 3 ? 2 : (c <= 5 ? 3 : 4)));
-      html += '<div class="h-cell'+(isToday?' h-today':'')+'" data-lvl="'+lvl+'" title="'+c+' tasks on '+shortDay(dStr)+(isToday?' (today)':'')+'"></div>';
+      const c = counts[dStr] || 0;
+      const isToday = dStr === todayStr;
+      const isFuture = dStr > todayStr;
+      const dMs = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+      const qStartMs = new Date(qStart.getFullYear(), qStart.getMonth(), qStart.getDate()).getTime();
+      const dayOfQ = Math.floor((dMs - qStartMs) / 86400000) + 1;
+
+      if (isFuture) {
+        html += `<div class="h-cell h-future" data-lvl="0" style="opacity:0.25" title="Day ${dayOfQ} of ${totalDays} · ${shortDay(dStr)} (Future)"></div>`;
+      } else {
+        let lvl = c === 0 ? 0 : (c <= 1 ? 1 : (c <= 3 ? 2 : (c <= 5 ? 3 : 4)));
+        html += `<div class="h-cell${isToday ? ' h-today' : ''}" data-lvl="${lvl}" title="Day ${dayOfQ} of ${totalDays} · ${c} tasks done on ${shortDay(dStr)}${isToday ? ' (Today)' : ''}"></div>`;
+      }
     }
   }
   html += '</div>';
   wrap.innerHTML = html;
-  setTimeout(() => wrap.scrollLeft = wrap.scrollWidth, 50);
+  
+  const todayCell = wrap.querySelector('.h-today');
+  if(todayCell){
+    setTimeout(() => {
+      wrap.scrollLeft = Math.max(0, todayCell.offsetLeft - wrap.clientWidth / 2);
+    }, 50);
+  } else {
+    setTimeout(() => wrap.scrollLeft = wrap.scrollWidth, 50);
+  }
+
   renderStreak();
 }
 
