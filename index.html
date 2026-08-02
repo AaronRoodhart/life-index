@@ -232,17 +232,145 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,va
 .toast.on{transform:translate(-50%,0)}
 footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
 
-/* ---------- daily hero ---------- */
-.day-hero{background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow);padding:22px 24px;margin-top:20px}
-.day-hero-top{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
-.day-hero-score{display:flex;align-items:baseline;gap:8px}
-.day-hero-score .num{font-size:52px;color:var(--ink)}
-.day-hero-score em{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.05em}
-.day-hero-meta{margin-left:auto;text-align:right}
-.day-hero-meta .avg{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.06em}
-.day-hero-meta .avg b{color:var(--ink-2);font-weight:600}
-.day-hero-summary{font-size:13px;color:var(--ink-2);margin-top:10px;line-height:1.5}
-.day-hero .stack{margin:14px 0 8px}
+/* ---------- topbar streak pill ---------- */
+.top-streak-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, rgba(255,140,0,0.12) 0%, rgba(255,69,0,0.08) 100%);
+  border: 1px solid rgba(255,140,0,0.25);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink);
+  margin-left: 10px;
+}
+.top-streak-pill .flame { font-size: 13px; }
+.top-streak-pill b { font-weight: 700; color: #E65100; }
+.top-streak-pill .lbl { font-size: 8.5px; letter-spacing: 0.1em; color: var(--muted); }
+
+/* ---------- dark elevated daily hero card ---------- */
+.day-hero {
+  background: linear-gradient(135deg, #1C2230 0%, #121622 100%);
+  border-radius: 24px;
+  box-shadow: 0 12px 36px -8px rgba(18,22,31,0.3);
+  padding: 24px 26px;
+  margin-top: 20px;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+  overflow: hidden;
+}
+.day-hero-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.day-hero-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.day-hero-score {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.day-hero-score .num {
+  font-family: var(--serif);
+  font-size: 58px;
+  line-height: 0.95;
+  color: #ffffff;
+}
+.day-hero-score .num-denom {
+  font-size: 26px;
+  color: rgba(255,255,255,0.45);
+}
+.score-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.score-meta em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+}
+.pct-pill {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(23,147,106,0.22);
+  color: #26D098;
+  border: 1px solid rgba(38,208,152,0.3);
+  width: max-content;
+}
+.day-hero-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  margin-left: auto;
+}
+.hero-streak-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(255,140,0,0.22) 0%, rgba(255,69,0,0.15) 100%);
+  border: 1.5px solid rgba(255,140,0,0.4);
+  border-radius: 14px;
+  padding: 6px 14px;
+  box-shadow: 0 4px 14px rgba(255,100,0,0.18);
+}
+.hero-streak-pill .flame { font-size: 20px; }
+.hero-streak-pill .streak-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+.hero-streak-pill .val {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 400;
+  color: #FFB74D;
+}
+.hero-streak-pill .lbl {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.65);
+}
+.hero-avg-tag {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.05em;
+}
+.hero-avg-tag b {
+  color: #ffffff;
+}
+.day-hero-summary {
+  font-size: 13.5px;
+  color: rgba(255,255,255,0.85);
+  margin-top: 12px;
+  line-height: 1.5;
+}
+.day-hero .stack {
+  margin: 16px 0 10px;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.1);
+}
 
 /* ---------- task groups ---------- */
 .tgroup{margin-bottom:4px}
@@ -484,6 +612,9 @@ footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-conte
 
 <div class="topbar"><div class="wrap">
   <div class="brand"><b>Life Index</b><span id="brandq">—</span></div>
+  <div class="top-streak-pill" id="topStreakPill" title="Current Daily Streak">
+    <span class="flame">🔥</span> <b id="topStreakVal">0</b> <span class="lbl">STREAK</span>
+  </div>
   <nav id="nav">
     <button data-t="tasks" aria-current="true">Tasks</button>
     <button data-t="now">Life Status</button>
@@ -1158,54 +1289,73 @@ function taskRow(t){
     '<button class="del" data-td="'+t.id+'" aria-label="Delete task">×</button></div>';
 }
 function renderDayHero(){
-  const el=document.getElementById("dayHero");
+  const el = document.getElementById("dayHero");
   if(!el) return;
-  const day=S.tasks.filter(t=>t.date===viewDate);
-  const total=day.length;
-  const done=day.filter(t=>t.done).length;
+  const day = S.tasks.filter(t => t.date === viewDate);
+  const total = day.length;
+  const done = day.filter(t => t.done).length;
+  const streak = calcStreak();
 
   // 7-day average
-  let sum7=0,days7=0;
-  for(let i=0;i<7;i++){
-    const d=shiftDay(today(),-i);
-    const dt=S.tasks.filter(t=>t.date===d);
-    if(dt.length){sum7+=dt.filter(t=>t.done).length;days7++}
+  let sum7 = 0, days7 = 0;
+  for(let i = 0; i < 7; i++){
+    const d = shiftDay(today(), -i);
+    const dt = S.tasks.filter(t => t.date === d);
+    if(dt.length){ sum7 += dt.filter(t => t.done).length; days7++; }
   }
-  const avg7=days7?sum7/days7:0;
+  const avg7 = days7 ? sum7 / days7 : 0;
 
   // pillar breakdown of today's done tasks
-  const by={life:0};PILLARS.forEach(p=>by[p.id]=0);
-  day.filter(t=>t.done).forEach(t=>{
-    const a=AMAP[t.area];
-    if(a){if(a.id==='life')by.life++;else by[a.pillar]++}
+  const by = { life: 0 }; PILLARS.forEach(p => by[p.id] = 0);
+  day.filter(t => t.done).forEach(t => {
+    const a = AMAP[t.area];
+    if(a){ if(a.id === 'life') by.life++; else by[a.pillar]++; }
   });
 
-  // Determine dominant pillar
-  let dominant='nothing yet';
-  if(done>0){
-    let maxP='life',maxV=by.life;
-    PILLARS.forEach(p=>{if(by[p.id]>maxV){maxV=by[p.id];maxP=p.id}});
-    dominant=maxP==='life'?'Life':PILLARS.find(p=>p.id===maxP).name;
+  let dominant = 'nothing yet';
+  if(done > 0){
+    let maxP = 'life', maxV = by.life;
+    PILLARS.forEach(p => { if(by[p.id] > maxV){ maxV = by[p.id]; maxP = p.id; } });
+    dominant = maxP === 'life' ? 'Life' : PILLARS.find(p => p.id === maxP).name;
   }
 
-  const summaryText=total===0
-    ?'No tasks yet — add what you\'re working on today.'
-    :done+' of '+total+' done · mostly '+dominant+' today';
+  const summaryText = total === 0
+    ? 'No tasks yet — add what you\'re working on today.'
+    : done + ' of ' + total + ' done · mostly ' + dominant + ' today';
 
-  let stackHTML='';
-  if(done>0){
-    stackHTML='<div class="stack">'+PILLARS.map(p=>by[p.id]?'<i style="background:'+p.color+';width:'+(by[p.id]/done*100)+'%"></i>':'').join('')+
-      (by.life?'<i style="background:#868EA0;width:'+(by.life/done*100)+'%"></i>':'')+'</div>';
+  let stackHTML = '';
+  if(done > 0){
+    stackHTML = '<div class="stack">' + PILLARS.map(p => by[p.id] ? '<i style="background:' + p.color + ';width:' + (by[p.id] / done * 100) + '%"></i>' : '').join('') +
+      (by.life ? '<i style="background:#868EA0;width:' + (by.life / done * 100) + '%"></i>' : '') + '</div>';
   }
 
-  el.innerHTML=
-    '<div class="day-hero-top">'+
-      '<div class="day-hero-score"><div class="num">'+done+'<span style="font-size:28px;color:var(--muted)"> / '+total+'</span></div>'+
-      '<em>tasks done</em></div>'+
-      '<div class="day-hero-meta"><div class="avg">7-day avg: <b>'+avg7.toFixed(1)+'</b> / day</div></div>'+
-    '</div>'+
-    stackHTML+
-    '<div class="day-hero-summary">'+esc(summaryText)+'</div>';
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+  el.innerHTML = `
+    <div class="day-hero-top">
+      <div class="day-hero-left">
+        <div class="day-hero-score">
+          <div class="num">${done}<span class="num-denom"> / ${total}</span></div>
+          <div class="score-meta">
+            <em>tasks done</em>
+            <span class="pct-pill">${pct}% complete</span>
+          </div>
+        </div>
+      </div>
+      <div class="day-hero-right">
+        <div class="hero-streak-pill" title="Current Daily Streak">
+          <span class="flame">🔥</span>
+          <div class="streak-info">
+            <b class="val">${streak}</b>
+            <span class="lbl">DAY STREAK</span>
+          </div>
+        </div>
+        <div class="hero-avg-tag">7-day avg: <b>${avg7.toFixed(1)}</b> / day</div>
+      </div>
+    </div>
+    ${stackHTML}
+    <div class="day-hero-summary">${esc(summaryText)}</div>
+  `;
 }
 
 function renderTasks(){
@@ -1297,13 +1447,17 @@ function calcStreak(){
 }
 
 function renderStreak(){
-  const el=document.getElementById("streakBar");
-  if(!el) return;
-  const s=calcStreak();
-  if(s>0){
-    el.innerHTML='<span class="streak-flame">🔥</span><span class="streak-num">'+s+'</span><span class="streak-label">day streak</span>';
-  } else {
-    el.innerHTML='<span class="streak-flame" style="opacity:.4">🔥</span><span class="streak-num" style="color:var(--muted)">0</span><span class="streak-label">Start your streak — complete a task today</span>';
+  const s = calcStreak();
+  const topVal = document.getElementById("topStreakVal");
+  if(topVal) topVal.textContent = s;
+
+  const el = document.getElementById("streakBar");
+  if(el){
+    if(s > 0){
+      el.innerHTML = `<span class="streak-flame">🔥</span><span class="streak-num">${s}</span><span class="streak-label">day streak</span>`;
+    } else {
+      el.innerHTML = `<span class="streak-flame" style="opacity:.4">🔥</span><span class="streak-num" style="color:var(--muted)">0</span><span class="streak-label">Start your streak — complete a task today</span>`;
+    }
   }
 }
 
