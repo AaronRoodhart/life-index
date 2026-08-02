@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
 <style>
 :root{
@@ -213,9 +214,9 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,va
 .legend s{text-decoration:none;display:inline-flex;align-items:center;gap:5px}
 .legend s::before{content:"";width:7px;height:7px;border-radius:2px;background:var(--c)}
 
-.heatmap-wrap{overflow-x:auto;padding-bottom:6px}
-.heatmap{display:grid;grid-template-rows:repeat(7,10px);grid-auto-flow:column;gap:3px;min-width:max-content}
-.h-cell{width:10px;height:10px;border-radius:2px;background:rgba(18,22,31,.05);transition:.2s}
+.heatmap-wrap{overflow-x:auto;padding:10px 10px 14px 10px}
+.heatmap{display:grid;grid-template-rows:repeat(7,11px);grid-auto-flow:column;gap:4px;min-width:max-content;padding:6px}
+.h-cell{width:11px;height:11px;border-radius:3px;background:rgba(18,22,31,.06);transition:.2s}
 .h-cell[data-lvl="1"]{background:rgba(23,147,106,.3)}
 .h-cell[data-lvl="2"]{background:rgba(23,147,106,.55)}
 .h-cell[data-lvl="3"]{background:rgba(23,147,106,.8)}
@@ -683,6 +684,65 @@ function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",
 function uid(){return Math.random().toString(36).slice(2,9)}
 let tt;
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("on"),2100)}
+
+/* ============================== audio & confetti ============================== */
+let audioCtx = null;
+function playPopSound(){
+  try {
+    if(!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if(audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    const now = audioCtx.currentTime;
+    
+    // First tone - sweet pop
+    const osc1 = audioCtx.createOscillator();
+    const gain1 = audioCtx.createGain();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(520, now);
+    osc1.frequency.exponentialRampToValueAtTime(880, now + 0.07);
+    gain1.gain.setValueAtTime(0.28, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+    osc1.connect(gain1);
+    gain1.connect(audioCtx.destination);
+    osc1.start(now);
+    osc1.stop(now + 0.1);
+
+    // Harmonic chime tone for extra satisfaction
+    const osc2 = audioCtx.createOscillator();
+    const gain2 = audioCtx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(1040, now + 0.03);
+    osc2.frequency.exponentialRampToValueAtTime(1320, now + 0.12);
+    gain2.gain.setValueAtTime(0.14, now + 0.03);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+    osc2.connect(gain2);
+    gain2.connect(audioCtx.destination);
+    osc2.start(now + 0.03);
+    osc2.stop(now + 0.16);
+  } catch(e) {}
+}
+
+function triggerConfetti(targetEl){
+  if(typeof confetti === 'function'){
+    let x = 0.5, y = 0.5;
+    if(targetEl){
+      const rect = targetEl.getBoundingClientRect();
+      x = (rect.left + rect.width / 2) / window.innerWidth;
+      y = (rect.top + rect.height / 2) / window.innerHeight;
+    }
+    confetti({
+      particleCount: 35,
+      spread: 55,
+      startVelocity: 22,
+      ticks: 150,
+      origin: { x, y },
+      colors: ['#17936A', '#CE4A73', '#3355D1', '#DFA02C', '#FFD700']
+    });
+  }
+}
 
 /* ============================== storage (Supabase) ============================== */
 const SUPABASE_URL = "https://eqcmhnivnkioiyuuhdko.supabase.co";
@@ -1440,7 +1500,17 @@ document.getElementById("tadd").addEventListener("click",addTask);
 document.getElementById("tinput").addEventListener("keydown",e=>{if(e.key==="Enter")addTask()});
 document.addEventListener("click",e=>{
   const tg=e.target.closest("[data-tt]"),dl=e.target.closest("[data-td]");
-  if(tg){const t=S.tasks.find(x=>x.id===tg.dataset.tt);if(t){t.done=!t.done;save();renderTasks();renderEffort();renderHeatmap()}}
+  if(tg){
+    const t=S.tasks.find(x=>x.id===tg.dataset.tt);
+    if(t){
+      t.done=!t.done;
+      if(t.done){
+        playPopSound();
+        triggerConfetti(tg);
+      }
+      save();renderTasks();renderEffort();renderHeatmap();
+    }
+  }
   if(dl){S.tasks=S.tasks.filter(x=>x.id!==dl.dataset.td);save();renderTasks();renderEffort();renderHeatmap()}
 });
 document.getElementById("dprev").addEventListener("click",()=>{viewDate=shiftDay(viewDate,-1);renderTasks()});
