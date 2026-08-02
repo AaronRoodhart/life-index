@@ -6,31 +6,26 @@
 <title>Life Index</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:ital,opsz,wght@0,9..144,700..900;1,9..144,400..700&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
 <style>
 :root{
-  --paper:#F4EFE6;
-  --card:#FFFBF4;
-  --card-dark:#0F4C3A;
-  --ink:#0A2B22;
-  --ink-2:#3E5E53;
-  --muted:#6B887E;
-  --line:#E0D7C8;
-  --pink:#EE92A6;
-  --pink-light:#FBF0F3;
-  --forest:#0F4C3A;
-  --health:#178560;
-  --relationships:#EE92A6;
-  --work:#2A52A0;
-  --joy:#E09526;
+  --paper:#F1F3F6;
+  --card:#FFFFFF;
+  --ink:#12161F;
+  --ink-2:#454C5C;
+  --muted:#868EA0;
+  --line:#E4E7ED;
+  --health:#17936A;
+  --relationships:#CE4A73;
+  --work:#3355D1;
+  --joy:#DFA02C;
   --r-card:22px;
-  --shadow:0 4px 20px rgba(15,76,58,.06), 0 1px 3px rgba(15,76,58,.04);
-  --display:"Fraunces", Georgia, serif;
-  --script:"Caveat", cursive;
-  --sans:"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
-  --mono:"JetBrains Mono", ui-monospace, monospace;
+  --shadow:0 1px 2px rgba(18,22,31,.04), 0 8px 24px -12px rgba(18,22,31,.14);
+  --serif:"Instrument Serif", Georgia, "Times New Roman", serif;
+  --sans:"Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -38,28 +33,27 @@ body{
   font-family:var(--sans);
   color:var(--ink);
   background-color:var(--paper);
-  background-image:radial-gradient(circle at 1px 1px, rgba(15,76,58,.06) 1px, transparent 0);
-  background-size:24px 24px;
+  background-image:radial-gradient(circle at 1px 1px, rgba(18,22,31,.07) 1px, transparent 0);
+  background-size:22px 22px;
   -webkit-font-smoothing:antialiased;
   padding-bottom:64px;
 }
 .wrap{max-width:940px;margin:0 auto;padding:0 18px}
 
 /* ---------- top bar ---------- */
-.topbar{position:sticky;top:0;z-index:40;background:rgba(244,239,230,.92);backdrop-filter:blur(14px);border-bottom:1.5px solid var(--line)}
-.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:62px;gap:12px}
-.brand{display:flex;align-items:baseline;gap:8px;flex-shrink:0}
-.brand b{font-family:var(--display);font-variation-settings:'opsz' 144,'wght' 900;font-size:24px;letter-spacing:-.02em;text-transform:uppercase;color:var(--forest)}
-.brand span{font-family:var(--script);font-size:19px;font-weight:700;color:var(--pink);transform:rotate(-3deg);display:inline-block}
-nav{display:flex;gap:3px;margin-left:auto;background:rgba(15,76,58,.06);padding:4px;border-radius:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-nav::-webkit-scrollbar{display:none}
+.topbar{position:sticky;top:0;z-index:40;background:rgba(241,243,246,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.topbar .wrap{display:flex;align-items:center;gap:18px;height:60px}
+.brand{display:flex;align-items:baseline;gap:9px;flex-shrink:0}
+.brand b{font-family:var(--serif);font-weight:400;font-size:23px;letter-spacing:-.01em}
+.brand span{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+nav{display:flex;gap:2px;margin-left:auto;background:rgba(18,22,31,.05);padding:3px;border-radius:11px}
 nav button{
-  font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;
-  border:0;background:none;color:var(--ink-2);padding:8px 14px;border-radius:10px;cursor:pointer;transition:.18s;white-space:nowrap;flex-shrink:0;min-height:38px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:500;
+  border:0;background:none;color:var(--ink-2);padding:8px 13px;border-radius:8px;cursor:pointer;transition:.18s;
 }
-nav button:hover{color:var(--forest)}
-nav button[aria-current="true"]{background:var(--forest);color:#FFF8EE;box-shadow:0 2px 8px rgba(15,76,58,.2)}
-nav button:focus-visible{outline:2px solid var(--forest);outline-offset:2px}
+nav button:hover{color:var(--ink)}
+nav button[aria-current="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(18,22,31,.1)}
+nav button:focus-visible{outline:2px solid var(--work);outline-offset:2px}
 
 /* ---------- generic ---------- */
 .tab{display:none;animation:rise .38s cubic-bezier(.2,.7,.3,1)}
@@ -238,15 +232,33 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,va
 .toast.on{transform:translate(-50%,0)}
 footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
 
+/* ---------- topbar streak pill ---------- */
+.top-streak-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, rgba(255,140,0,0.12) 0%, rgba(255,69,0,0.08) 100%);
+  border: 1px solid rgba(255,140,0,0.25);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink);
+  margin-left: 10px;
+}
+.top-streak-pill .flame { font-size: 13px; }
+.top-streak-pill b { font-weight: 700; color: #E65100; }
+.top-streak-pill .lbl { font-size: 8.5px; letter-spacing: 0.1em; color: var(--muted); }
+
 /* ---------- dark elevated daily hero card ---------- */
 .day-hero {
-  background: var(--card-dark);
-  border-radius: 26px;
-  box-shadow: 0 12px 36px -8px rgba(15,76,58,0.35);
-  padding: 26px 28px;
+  background: linear-gradient(135deg, #1C2230 0%, #121622 100%);
+  border-radius: 24px;
+  box-shadow: 0 12px 36px -8px rgba(18,22,31,0.3);
+  padding: 24px 26px;
   margin-top: 20px;
-  color: #FFF8EE;
-  border: 2px solid #165E49;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.08);
   position: relative;
   overflow: hidden;
 }
@@ -268,15 +280,14 @@ footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-conte
   gap: 12px;
 }
 .day-hero-score .num {
-  font-family: var(--display);
-  font-variation-settings: 'opsz' 144, 'wght' 900;
-  font-size: 60px;
-  line-height: 0.92;
-  color: #FFFBF4;
+  font-family: var(--serif);
+  font-size: 58px;
+  line-height: 0.95;
+  color: #ffffff;
 }
 .day-hero-score .num-denom {
   font-size: 26px;
-  color: rgba(255,248,238,0.5);
+  color: rgba(255,255,255,0.45);
 }
 .score-meta {
   display: flex;
@@ -289,17 +300,18 @@ footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-conte
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255,248,238,0.7);
+  color: rgba(255,255,255,0.6);
 }
 .pct-pill {
-  font-family: var(--script);
-  font-size: 16px;
-  font-weight: 700;
-  padding: 2px 10px;
-  border-radius: 8px;
-  background: var(--pink);
-  color: #0A2B22;
-  box-shadow: 0 2px 8px rgba(238,146,166,0.3);
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(23,147,106,0.22);
+  color: #26D098;
+  border: 1px solid rgba(38,208,152,0.3);
   width: max-content;
 }
 .day-hero-right {
@@ -313,10 +325,11 @@ footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-conte
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(238,146,166,0.18);
-  border: 1.5px solid rgba(238,146,166,0.4);
+  background: linear-gradient(135deg, rgba(255,140,0,0.22) 0%, rgba(255,69,0,0.15) 100%);
+  border: 1.5px solid rgba(255,140,0,0.4);
   border-radius: 14px;
   padding: 6px 14px;
+  box-shadow: 0 4px 14px rgba(255,100,0,0.18);
 }
 .hero-streak-pill .flame { font-size: 20px; }
 .hero-streak-pill .streak-info {
@@ -325,38 +338,38 @@ footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-conte
   line-height: 1;
 }
 .hero-streak-pill .val {
-  font-family: var(--display);
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--pink);
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 400;
+  color: #FFB74D;
 }
 .hero-streak-pill .lbl {
   font-family: var(--mono);
   font-size: 8px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(255,248,238,0.7);
+  color: rgba(255,255,255,0.65);
 }
 .hero-avg-tag {
   font-family: var(--mono);
   font-size: 10.5px;
-  color: rgba(255,248,238,0.65);
+  color: rgba(255,255,255,0.55);
   letter-spacing: 0.05em;
 }
 .hero-avg-tag b {
-  color: #FFFBF4;
+  color: #ffffff;
 }
 .day-hero-summary {
-  font-size: 14px;
-  color: rgba(255,248,238,0.9);
-  margin-top: 14px;
+  font-size: 13.5px;
+  color: rgba(255,255,255,0.85);
+  margin-top: 12px;
   line-height: 1.5;
 }
 .day-hero .stack {
   margin: 16px 0 10px;
   height: 8px;
   border-radius: 4px;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.1);
 }
 
 /* ---------- task groups ---------- */
@@ -558,23 +571,16 @@ footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-conte
 .authgate-card h1{font-family:var(--serif);font-weight:400;font-size:28px;margin:0 0 8px}
 .authgate-card p{font-size:13.5px;color:var(--ink-2);line-height:1.6;margin:0 0 18px}
 
-@media(max-width:768px){
-  .wrap{padding:0 14px}
-  .topbar .wrap{height:56px;padding:0 12px;gap:8px}
-  .brand b{font-size:20px}
-  .brand span{font-size:16px}
-  nav button{padding:7px 11px;font-size:9.5px;min-height:36px}
+@media(max-width:760px){
   .grid,.bets{grid-template-columns:1fr}
-  .hero-score .num{font-size:48px}
-  .day-hero{padding:20px 18px;border-radius:20px}
-  .day-hero-score .num{font-size:48px}
-  .day-hero-top{flex-direction:column;align-items:stretch;gap:14px}
-  .day-hero-right{align-items:flex-start;margin-left:0}
-  .card{padding:18px 16px;border-radius:18px}
-  .datenav{margin:14px 0 10px}
-  .datenav b{font-size:10.5px}
-  .task{padding:10px 0}
-  .tick{width:24px;height:24px}
+  .hero-score .num{font-size:62px}
+  .topbar .wrap{gap:10px}
+  .brand span{display:none}
+  nav button{padding:8px 10px;font-size:9.5px}
+  .matrix{gap:5px;width:100%;justify-content:space-between}
+  .dot{width:9px;height:9px}
+  .hero-in{padding:22px 18px}
+  .day-hero-score .num{font-size:40px}
 }
 @media(prefers-reduced-motion:reduce){
   *{animation-duration:.01ms !important;transition-duration:.01ms !important}
@@ -605,7 +611,10 @@ footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-conte
 </div>
 
 <div class="topbar"><div class="wrap">
-  <div class="brand"><b>Life Index</b><span>supper club</span></div>
+  <div class="brand"><b>Life Index</b><span id="brandq">—</span></div>
+  <div class="top-streak-pill" id="topStreakPill" title="Current Daily Streak">
+    <span class="flame">🔥</span> <b id="topStreakVal">0</b> <span class="lbl">STREAK</span>
+  </div>
   <nav id="nav">
     <button data-t="tasks" aria-current="true">Tasks</button>
     <button data-t="now">Life Status</button>
