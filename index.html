@@ -695,6 +695,9 @@ footer{margin:44px 0 20px;display:flex;gap:10px;align-items:center;justify-conte
     <!-- Daily progress hero -->
     <div class="day-hero" id="dayHero"></div>
 
+    <div class="eyebrow">This quarter's three goals</div>
+    <div class="bets" id="taskBetsPreview"></div>
+
     <div class="datenav">
       <button id="dprev" aria-label="Previous day">‹</button>
       <b id="dlabel">Today</b>
@@ -1113,8 +1116,14 @@ function betCard(g,i,edit){
     "</div></div>";
 }
 function renderBets(){
-  document.getElementById("betPreview").innerHTML=S.goals.map((g,i)=>betCard(g,i,false)).join("");
-  document.getElementById("betEditor").innerHTML=S.goals.map((g,i)=>betCard(g,i,true)).join("");
+  const p1 = document.getElementById("betPreview");
+  if(p1) p1.innerHTML = S.goals.map((g,i)=>betCard(g,i,false)).join("");
+
+  const p2 = document.getElementById("taskBetsPreview");
+  if(p2) p2.innerHTML = S.goals.map((g,i)=>betCard(g,i,false)).join("");
+
+  const editor = document.getElementById("betEditor");
+  if(editor) editor.innerHTML = S.goals.map((g,i)=>betCard(g,i,true)).join("");
 }
 function editBet(i){
   const g=S.goals[i]||{area:"mission",title:"",date:"",progress:0};
@@ -1628,13 +1637,13 @@ document.getElementById("betEditor").addEventListener("input",e=>{
   c.querySelector(".bar i").style.width=e.target.value+"%";
   c.querySelector(".pct").textContent=e.target.value+"%";
   c.querySelectorAll(".date")[c.querySelectorAll(".date").length-1].textContent=+e.target.value>=100?"Done":"Progress";
-  document.getElementById("betPreview").innerHTML=S.goals.map((g,k)=>betCard(g,k,false)).join("");
+  renderBets();
 });
 document.getElementById("betEditor").addEventListener("change",e=>{
   if(e.target.dataset.f!=="area")return;
   e.target.closest(".bet").style.setProperty("--c",AMAP[e.target.value].color);
 });
-document.getElementById("betPreview").addEventListener("click",e=>{if(e.target.closest("[data-goto]"))go("bets")});
+document.addEventListener("click",e=>{if(e.target.closest("[data-goto='bets']"))go("bets")});
 
 // tasks
 document.getElementById("tchips").addEventListener("click",e=>{
